@@ -1,13 +1,14 @@
 package piezas;
 
-public class Advisor extends piezas{
-    public Advisor(int x, int y) {
-        super("CONSEJERO_NEGRO", x, y);
+
+public class Advisor2 extends piezas{
+    public Advisor2(int x, int y) {
+        super("src/imagenes/advisorr", x, y);
     }
     
     @Override
     public boolean esRoja() {
-        return false;
+        return true;
     }
     
     @Override
@@ -24,4 +25,3 @@ public class Advisor extends piezas{
         return (deltaX == 1 && deltaY == 1);
     }
 }
-

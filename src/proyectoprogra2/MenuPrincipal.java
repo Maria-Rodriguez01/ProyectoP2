@@ -7,7 +7,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class MenuPrincipal extends JFrame{
+public class MenuPrincipal extends JFrame {
     
     
     
@@ -64,8 +64,7 @@ public class MenuPrincipal extends JFrame{
     }
 
     private void abrirLogin() {
-       InicioSesion is;
-        is = new InicioSesion(jugadores, indice);
+       InicioSesion is=new InicioSesion(jugadores, indice);
        is.setVisible(true);
        this.dispose();
     }

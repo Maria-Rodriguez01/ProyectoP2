@@ -1,22 +1,21 @@
-package piezas;
-
-
-import piezas.piezas;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+package piezas;
 
-
-public class Horse extends piezas{
-   public Horse(int x, int y) {
-        super("CABALLO_NEGRO", x, y);
+/**
+ *
+ * @author Maria Gabriela
+ */
+public class Horse2 extends piezas{
+    public Horse2(int x, int y) {
+        super("src/imagenes/horser", x, y);
     }
     
     @Override
     public boolean esRoja() {
-        return false;
+        return true;
     }
     
     @Override
@@ -42,4 +41,3 @@ public class Horse extends piezas{
         return tablero[bloqueoY][bloqueoX] == null;
     }
 }
-

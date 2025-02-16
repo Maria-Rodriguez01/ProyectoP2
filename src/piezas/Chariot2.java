@@ -4,27 +4,29 @@
  */
 package piezas;
 
-
-
-
-public class Chariot extends piezas{
-    public Chariot(int x, int y) {
-        super("CARRO_NEGRO", x, y);
+/**
+ *
+ * @author Maria Gabriela
+ */
+public class Chariot2 extends piezas{
+    
+    public Chariot2(int x, int y) {
+        super("src/imagenes/chariotr", x, y);
     }
     
     @Override
     public boolean esRoja() {
-        return false;
+        return true;
     }
     
     @Override
     public boolean esMovimientoValido(int nuevaX, int nuevaY, piezas[][] tablero) {
-        
+        // El Carro solo puede moverse ortogonalmente
         if (nuevaX != x && nuevaY != y) {
             return false;
         }
         
-        
+        // Verificar que no hay piezas en el camino
         if (nuevaX == x) {
             int inicio = Math.min(y, nuevaY);
             int fin = Math.max(y, nuevaY);

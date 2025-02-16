@@ -4,21 +4,24 @@
  */
 package piezas;
 
-
-public class Elephant extends piezas {
-    public Elephant(int x, int y) {
-        super("ELEFANTE_NEGRO", x, y);
+/**
+ *
+ * @author Maria Gabriela
+ */
+public class Elephant2 extends piezas{
+    public Elephant2(int x, int y) {
+        super("src/imagenes/elephantr", x, y);
     }
     
     @Override
     public boolean esRoja() {
-        return false;
+        return true;
     }
     
     @Override
     public boolean esMovimientoValido(int nuevaX, int nuevaY, piezas[][] tablero) {
         // El Elefante no puede cruzar el río
-        if (nuevaY < 5) return false;
+        if (nuevaY > 4) return false;
         
         // El Elefante se mueve exactamente dos casillas en diagonal
         int deltaX = Math.abs(nuevaX - x);
@@ -33,3 +36,4 @@ public class Elephant extends piezas {
         return tablero[puntoMedioY][puntoMedioX] == null;
     }
 }
+
