@@ -1,8 +1,5 @@
-package proyectoprogra2;
-
+package piezas;
 import javax.swing.*;
-
-
 public abstract class piezas {
     protected String tipo;   
     protected int x;

@@ -1,7 +1,5 @@
 package piezas;
 
-import proyectoprogra2.piezas;
-
 public class Soldier extends piezas {
     public Soldier(int x, int y) {
         super("SOLDADO_NEGRO", x, y);

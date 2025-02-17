@@ -14,7 +14,7 @@ public class ProyectoProgra2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-         MenuPrincipal mp=new MenuPrincipal();
+         Tablero mp=new Tablero();
          
          mp.setVisible(true);
     }

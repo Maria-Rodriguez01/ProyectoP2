@@ -1,17 +1,5 @@
 package piezas;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-
-import proyectoprogra2.piezas;
-
-/**
- *
- * @author Maria Gabriela
- */
 public class Soldier2 extends piezas{
      public Soldier2(int x, int y) {
         super("SOLDADO_ROJO", x, y);

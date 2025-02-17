@@ -5,7 +5,6 @@
 package proyectoprogra2;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 public class InicioSesion extends JFrame {
@@ -73,12 +72,15 @@ public class InicioSesion extends JFrame {
         }
 
         // Check credentials against registered users
-        for (usuarios jugador: jugadores) {
-            if (jugadores != null && jugador.getUsuario().equalsIgnoreCase(usuario) && jugador.getContrasena().equals(password)) {
-                JOptionPane.showMessageDialog(this,
-                        "Bienvenido " + usuario,
-                        "Login Exitoso",
-                        JOptionPane.INFORMATION_MESSAGE);
+        for (int i = 0; i < jugadores.length; i++) {
+            if (jugadores[i] != null && 
+                jugadores[i].getUsuario().equalsIgnoreCase(usuario) && 
+                jugadores[i].getContrasena().equals(password)) {
+                
+                JOptionPane.showMessageDialog(this, 
+                    "Bienvenido " + usuario, 
+                    "Login Exitoso", 
+                    JOptionPane.INFORMATION_MESSAGE);
                 MenuInicial mi=new MenuInicial();
                 mi.setVisible(true);
                 

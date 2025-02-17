@@ -4,8 +4,6 @@
  */
 package piezas;
 
-import proyectoprogra2.piezas;
-
 /**
  *
  * @author Maria Gabriela

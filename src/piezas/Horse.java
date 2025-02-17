@@ -1,6 +1,5 @@
 package piezas;
 
-import proyectoprogra2.piezas;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

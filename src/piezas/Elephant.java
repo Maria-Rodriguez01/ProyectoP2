@@ -4,7 +4,6 @@
  */
 package piezas;
 
-import proyectoprogra2.piezas;
 
 
 public class Elephant extends piezas {
