@@ -22,16 +22,16 @@ public class MenuPrincipal extends JFrame {
         
         JLabel titleLabel = new JLabel(" BIENVENIDO A XIANGQI", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        titleLabel.setForeground(Color.RED); // Color rojo para destacar
-        add(titleLabel, BorderLayout.NORTH); // Se coloca en la parte superior
+        titleLabel.setForeground(Color.RED); 
+        add(titleLabel, BorderLayout.NORTH); 
 
         // Panel para centrar los botones
-        JPanel centerPanel = new JPanel(new GridBagLayout()); // Usa GridBagLayout para centrar
+        JPanel centerPanel = new JPanel(new GridBagLayout()); 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE; // Se posicionan uno debajo del otro
+        gbc.gridy = GridBagConstraints.RELATIVE; 
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 20, 10, 20); // Espaciado alrededor de los botones
+        gbc.insets = new Insets(10, 20, 10, 20); 
 
         // Crear botones
         JButton btnRegistro = new JButton("Registrarse");
@@ -64,9 +64,9 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void abrirLogin() {
-       InicioSesion is=new InicioSesion(jugadores, indice);
-       is.setVisible(true);
-       this.dispose();
+        InicioSesion is=new InicioSesion();
+        is.setVisible(true);
+        this.dispose();
     }
 
 }

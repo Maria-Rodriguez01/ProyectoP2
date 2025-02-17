@@ -1,5 +1,7 @@
 package piezas;
 
+import proyectoprogra2.piezas;
+
 public class Advisor extends piezas{
     public Advisor(int x, int y) {
         super("CONSEJERO_NEGRO", x, y);

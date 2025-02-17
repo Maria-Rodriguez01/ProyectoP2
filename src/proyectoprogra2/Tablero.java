@@ -7,14 +7,11 @@ package proyectoprogra2;
 import java.awt.*;
 import javax.swing.*;
 
-/**
- *
- * @author Maria Gabriela
- */
+
 public class Tablero extends JFrame {
     private static final int ROWS = 11; // Número de filas
     private static final int COLS = 9; // Número de columnas
-    private final JPanel[][] boardCells = new JPanel[ROWS][COLS]; // Matriz para almacenar los paneles
+    private final JPanel[][] tablero = new JPanel[ROWS][COLS]; // Matriz para almacenar los paneles
 
     public Tablero() {
         JFrame frame = new JFrame("Xiangqui");
@@ -60,7 +57,7 @@ public class Tablero extends JFrame {
                     }
                 }
                 
-                boardCells[row][col] = cell; // Guardar en el arreglo
+                tablero[row][col] = cell; // Guardar en el arreglo
                 boardPanel.add(cell);
             }
         }

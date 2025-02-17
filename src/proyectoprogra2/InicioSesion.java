@@ -9,72 +9,95 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 public class InicioSesion extends JFrame {
+    private final JTextField txtUsuario;
+    private final JPasswordField txtContrasena;
+    private final JButton btnIngresar;
+    private final JButton btnSalir;
+    private static final players players = new usuarios(null,null);
+    private final usuarios[] jugadores = players.getjugador();
+    private final int contadorJug = players.getcantusuarios();
 
-    public usuarios[] jugadores;
-    int indice;
-
-    public JTextField txtUsuario;
-    public JTextField txtContrasena;
-    public JButton btnIniciar, btnSalir;
-
-    public InicioSesion(usuarios[] jugadores, int indice) {
-        this.jugadores = jugadores;
-        this.indice = indice;
-
-        setTitle("Iniciar Sesion");
-        setSize(400, 400);
+    public InicioSesion() {
+        setTitle("Login de Jugadores");
+        setSize(350, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 4, 2, 5));
 
-        add(new JLabel("Usuario:"));
+        // Panel for input fields
+        JPanel panelCampos = new JPanel(new GridLayout(4, 1, 5, 5));
+        panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panelCampos.add(new JLabel("Usuario:"));
         txtUsuario = new JTextField(15);
-        add(txtUsuario);
+        panelCampos.add(txtUsuario);
 
-        add(new JLabel("Contraseña:"));
-        txtContrasena = new JTextField(15);
-        add(txtContrasena);
+        panelCampos.add(new JLabel("Contraseña:"));
+        txtContrasena = new JPasswordField(15);
+        panelCampos.add(txtContrasena);
 
-        btnIniciar = new JButton("Ingresar");
-        add(btnIniciar);
-        btnSalir=new JButton("Salir");
-        add(btnSalir);
-
-        btnIniciar.addActionListener((ActionEvent e) -> {
-            verificarCredenciales();
-            if (verificarCredenciales() == true) {
-                MenuInicial mi = new MenuInicial();
-                mi.setVisible(true);
-                setVisible(false);
-            }
-        });
+        // Panel for buttons
+        JPanel panelBotones = new JPanel();
+        btnIngresar = new JButton("Ingresar");
+        btnSalir = new JButton("Salir");
         
-        btnSalir.addActionListener((ActionEvent e)->{
-            this.dispose();
-            MenuPrincipal mp= new MenuPrincipal();
-            mp.setVisible(true);
+        panelBotones.add(btnIngresar);
+        panelBotones.add(btnSalir);
+
+        // Login button action
+        btnIngresar.addActionListener(e -> validarLogin());
+
+        // Exit button action
+        btnSalir.addActionListener(e -> {
+            MenuPrincipal regreso = new MenuPrincipal();
+            regreso.setVisible(true);
+            dispose();
         });
 
+        // Layout setup
+        setLayout(new BorderLayout());
+        add(panelCampos, BorderLayout.CENTER);
+        add(panelBotones, BorderLayout.SOUTH);
+        
+        pack();
         setVisible(true);
     }
 
-    private boolean verificarCredenciales() {
-        String usuario = txtUsuario.getText();
-        String contrasena = new String(txtContrasena.getText());
+    private boolean validarLogin() {
+        String usuario = txtUsuario.getText().trim();
+        String password = new String(txtContrasena.getPassword()).trim();
 
-        if (usuario.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Favor no dejar vacia las casillas", "Error!", JOptionPane.ERROR_MESSAGE);
+        // Validation checks
+        if (usuario.isEmpty() || password.isEmpty()) {
+            mostrarError("Por favor, complete ambos campos.");
             return false;
         }
 
-        for (int i = 0; i < indice; i++) {
-            if (jugadores[i].getUsuario().equals(usuario) && jugadores[i].getContrasena().equals(contrasena)) {
-                JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso. ¡Bienvenido " + usuario + "!");
+        // Check credentials against registered users
+        for (usuarios jugador: jugadores) {
+            if (jugadores != null && jugador.getUsuario().equalsIgnoreCase(usuario) && jugador.getContrasena().equals(password)) {
+                JOptionPane.showMessageDialog(this,
+                        "Bienvenido " + usuario,
+                        "Login Exitoso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                MenuInicial mi=new MenuInicial();
+                mi.setVisible(true);
+                
+                
+                
+                dispose();
                 return true;
             }
         }
-        JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Error!", JOptionPane.ERROR_MESSAGE);
+
+        // If we get here, login failed
+        mostrarError("Usuario o contraseña incorrectos.");
         return false;
     }
 
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, 
+            mensaje, 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
 }

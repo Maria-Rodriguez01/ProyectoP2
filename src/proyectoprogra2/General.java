@@ -2,20 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package piezas;
+package proyectoprogra2;
 
-/**
- *
- * @author Maria Gabriela
- */
-class General2 extends piezas {
-    public General2(int x,int y) {
-        super("src/imagenes/generalr", x, y);
+import proyectoprogra2.piezas;
+
+public class General extends piezas{
+
+    public General(int x, int y) {
+        super("GENERAL_NEGRO", x, y);
     }
     
     @Override
     public boolean esRoja() {
-        return true;
+        return false;
     }
     
     @Override
@@ -32,3 +31,4 @@ class General2 extends piezas {
         return (deltaX + deltaY == 1);
     }
 }
+

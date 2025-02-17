@@ -4,6 +4,8 @@
  */
 package piezas;
 
+import proyectoprogra2.piezas;
+
 
 public class Elephant extends piezas {
     public Elephant(int x, int y) {

@@ -4,6 +4,8 @@
  */
 package piezas;
 
+import proyectoprogra2.piezas;
+
 
 public class Cannon extends piezas {
     public Cannon(int x, int y) {

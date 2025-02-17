@@ -1,4 +1,4 @@
-package piezas;
+package proyectoprogra2;
 
 import javax.swing.*;
 

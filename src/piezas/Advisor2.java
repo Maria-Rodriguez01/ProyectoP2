@@ -1,5 +1,7 @@
 package piezas;
 
+import proyectoprogra2.piezas;
+
 
 public class Advisor2 extends piezas{
     public Advisor2(int x, int y) {

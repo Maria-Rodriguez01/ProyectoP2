@@ -5,8 +5,7 @@
 package proyectoprogra2;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 /**
@@ -14,14 +13,13 @@ import javax.swing.*;
  * @author Maria Gabriela
  */
 public class registro extends JFrame {
-
-    public JTextField txtUsuario;
-    public JTextField txtContrasena;
-    public JButton btnRegistrar, btnSalir;
-
-
-    public usuarios[] jugadores;
-    private int indice;
+    private final JTextField txtUsuario;
+    private final JTextField txtContrasena;
+    private final JButton btnRegistrar;
+    private final JButton btnSalir;
+    private static final players players = new usuarios(null, null);
+    private final usuarios[] jugadores = players.getjugador();
+    private int contadorJug = players.getcantusuarios();
 
     public registro() {
         setTitle("Registro de Jugadores");
@@ -29,68 +27,113 @@ public class registro extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-
-        // Inicializar el arreglo con un tamaño máximo (ejemplo: 10 jugadores)
-        jugadores = new usuarios[20];
-        indice = 0;
-
+        // Panel for input fields
         JPanel panelCampos = new JPanel(new GridLayout(4, 1, 5, 5));
+        panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         panelCampos.add(new JLabel("Usuario:"));
         txtUsuario = new JTextField(15);
         panelCampos.add(txtUsuario);
 
         panelCampos.add(new JLabel("Contraseña:"));
-        txtContrasena = new JTextField(15);
+        txtContrasena = new JPasswordField(15);
         panelCampos.add(txtContrasena);
 
+        // Panel for buttons
         JPanel panelBotones = new JPanel();
         btnRegistrar = new JButton("Registrar");
+        btnSalir = new JButton("Salir");
+        
         panelBotones.add(btnRegistrar);
-        btnSalir=new JButton("Salir");
         panelBotones.add(btnSalir);
 
-
-        // Acción del botón de registro
-        btnRegistrar.addActionListener((ActionEvent e) -> {
-            registrarJugador();
-            MenuPrincipal regreso=new MenuPrincipal();
-            regreso.setVisible(true);
-            this.dispose();
-            new InicioSesion(jugadores, indice); 
+        // Register button action
+        btnRegistrar.addActionListener(e -> {
+            String usuario = txtUsuario.getText().trim();
+            String contrasena = txtContrasena.getText().trim();
+            registrarJugador(usuario, contrasena);
         });
-        btnSalir.addActionListener((ActionEvent e) -> {
-            MenuPrincipal regreso=new MenuPrincipal();
-            regreso.setVisible(true);
-            this.dispose();
-        });
-        add(panelCampos, BorderLayout.NORTH);
-        add(panelBotones, BorderLayout.CENTER);
 
+        // Exit button action
+        btnSalir.addActionListener(e -> {
+            MenuPrincipal regreso = new MenuPrincipal();
+            regreso.setVisible(true);
+            dispose();
+        });
+
+        // Layout setup
+        setLayout(new BorderLayout());
+        add(panelCampos, BorderLayout.CENTER);
+        add(panelBotones, BorderLayout.SOUTH);
+        
+        pack();
         setVisible(true);
     }
 
-    private void registrarJugador() {
-        String usuario = txtUsuario.getText();
-        String contrasena = txtContrasena.getText();
-
-        if (usuario.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete ambos campos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    private boolean registrarJugador(String usu, String password) {
+        // Validation checks
+        if (usu.isEmpty() || password.isEmpty()) {
+            mostrarError("Por favor, complete ambos campos.");
+            return false;
         }
-        if (contrasena.length() < 5) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese una clave de 5 caracteres o mas.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        
+        if (password.length() < 5) {
+            mostrarError("Por favor, ingrese una clave de 5 caracteres o más.");
+            return false;
         }
-
-        if (indice < jugadores.length) {
-            jugadores[indice] = new usuarios(usuario, contrasena);
-            indice++;
-            JOptionPane.showMessageDialog(this, "Jugador registrado correctamente.");
+        
+        // Check array capacity first
+        if (contadorJug > jugadores.length) {
+            mostrarError("No se pueden registrar más jugadores.");
+            return false;
+        }
+        
+        // Check for duplicate username BEFORE registering
+        for (int i = 0; i < contadorJug; i++) {
+            if (jugadores[i] != null && 
+                jugadores[i].getUsuario().equalsIgnoreCase(usu)) {
+                mostrarError("Nombre de usuario ya en uso.");
+                return false;
+            }
+        }
+        
+        try {
+            // Create and register new player
+            usuarios nuevoJugador = new usuarios(usu, password);
+            
+            // Add to array using contadorJug as index
+            jugadores[contadorJug] = nuevoJugador;
+            
+            // Update the players management
+            players.addusuario(nuevoJugador);
+            players.setpa(nuevoJugador);
+            contadorJug = players.getcantusuarios();
+            
+            JOptionPane.showMessageDialog(this, 
+                "Jugador registrado correctamente.", 
+                "Éxito", 
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            // Clear the input fields
             txtUsuario.setText("");
             txtContrasena.setText("");
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pueden registrar más jugadores.", "Límite alcanzado", JOptionPane.ERROR_MESSAGE);
+            
+            // Return to main menu
+            MenuPrincipal regreso = new MenuPrincipal();
+            regreso.setVisible(true);
+            dispose();
+            return true;
+            
+        } catch (Exception e) {
+            mostrarError("Error al registrar el jugador: " + e.getMessage());
+            return false;
         }
     }
 
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, 
+            mensaje, 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
 }
