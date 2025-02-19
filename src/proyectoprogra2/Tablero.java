@@ -142,33 +142,52 @@ public class Tablero extends JPanel implements ActionListener {
     // Implementing ActionListener for retire button
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == retirarseBtn) {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "¿Está seguro que desea retirarse?",
-                    "Confirmar retiro",
-                    JOptionPane.YES_NO_OPTION);
+    if (e.getSource() == retirarseBtn) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro que desea retirarse?",
+                "Confirmar retiro",
+                JOptionPane.YES_NO_OPTION);
 
-            if (confirm == JOptionPane.YES_OPTION) {
-                if (turnoprimerjugador) {
-                    for (int i = 0; i < players.getcantusuarios(); i++) {
-                        usuarios[] jugadores = players.getjugador();
-                        if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
-                            jugadores[i].agregarp();
-                            break;
-                        }
+        if (confirm == JOptionPane.YES_OPTION) {
+            String ganador;
+            String perdedor;
+            
+            // Determinar quién gana basado en quién se retira
+            if (turnoprimerjugador) {
+                // Si se retira el primer jugador (rojo), gana el oponente (negro)
+                ganador = oponent;
+                perdedor = players.getpa().getUsuario();
+                
+                // Actualizar puntos del oponente
+                usuarios[] jugadores = players.getjugador();
+                for (int i = 0; i < players.getcantusuarios(); i++) {
+                    if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
+                        jugadores[i].agregarp();
+                        break;
                     }
-                } else {
-                    players.getpa().agregarp();
                 }
-
-                Container container = this.getParent();
-                if (container instanceof JFrame) {
-                    ((JFrame) container).dispose();
-                }
-                new MenuInicial().setVisible(true);
+            } else {
+                // Si se retira el segundo jugador (negro), gana el primer jugador (rojo)
+                ganador = players.getpa().getUsuario();
+                perdedor = oponent;
+                players.getpa().agregarp();
             }
+
+            // Mostrar mensaje de victoria por retiro
+            JOptionPane.showMessageDialog(this,
+                    perdedor + " se ha retirado.\n¡" + ganador + " ha ganado la partida!",
+                    "Fin del juego",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            // Cerrar la ventana y volver al menú principal
+            Container container = this.getParent();
+            if (container instanceof JFrame) {
+                ((JFrame) container).dispose();
+            }
+            new MenuInicial().setVisible(true);
         }
     }
+}
 
     // The rest of your Tablero implementation remains the same
     private void cargarPiezas() {
