@@ -2,104 +2,177 @@ package proyectoprogra2;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Tablero extends JPanel {
+public class Tablero extends JPanel implements ActionListener {
+
     private boolean turnoprimerjugador = true;
     private final int celdas = 60;
     private static final int filas = 10;
     private static final int columnas = 9;
     private piezas[][] tablero = new piezas[filas][columnas];
     private piezas piezaSeleccionada = null;
-    private static final players players = new usuarios(null, null);
+    private static players players = new usuarios(null, null);
     private int moveNumber = 1;
     private String oponent;
-    protected piezas piezaact=null;
+    protected piezas piezaact = null;
     private JButton retirarseBtn;
+    private JFrame parentFrame;
+    private JLabel turnoLabel;
+    private String jugadorActivo;
+    private String jugadorOponente;
 
     public Tablero(String oponent) {
-        JFrame pantalla=new JFrame();
-        pantalla.setTitle("Xiangqi - Ajedrez Chino");
-        pantalla.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pantalla.add(this);
-        this.setPreferredSize(new Dimension(columnas * celdas, filas * celdas));
-        
+        this.setPreferredSize(new Dimension(columnas * celdas, filas * celdas + 40));
+        this.setLayout(null);
+
+        // Guarda los nombres de los jugadores
+        this.jugadorActivo = players.getpa().getUsuario();
+        this.jugadorOponente = oponent;
+        this.oponent = oponent;
+
+        // Inicializa el label de turno
+        turnoLabel = new JLabel("Turno: " + jugadorActivo + " (Rojo)");
+        turnoLabel.setBounds(10, filas * celdas + 5, 200, 30);
+        turnoLabel.setForeground(Color.RED);
+        this.add(turnoLabel);
+
+        // Create the resign button
         retirarseBtn = new JButton("Retirarse");
-        retirarseBtn.setBounds(400, 660, 100, 30);
-        retirarseBtn.addActionListener((ActionListener) this);
-        pantalla.add(retirarseBtn);
-        
-        
-        
-        players.getpa().nuevapartida();
-        usuarios[] jugadores= players.getjugador();
-        for (int i = 0; i < 10; i++) {  
-        if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
-            jugadores[i].nuevapartida();//agregar una nueva partida
-            break;
+        retirarseBtn.setBounds((columnas * celdas - 100) / 2, filas * celdas + 5, 100, 30);
+        retirarseBtn.addActionListener(this);
+        this.add(retirarseBtn);
+
+        if (players.getpa() == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Error: No hay jugador activo. Por favor inicie sesión.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
-      }
-        this.oponent= oponent;//determinar el oponente
-        
+
+        players.getpa().nuevapartida();
+
+        usuarios[] jugadores = players.getjugador();
+        boolean opponentFound = false;
+
+        for (int i = 0; i < players.getcantusuarios(); i++) {
+            if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
+                jugadores[i].nuevapartida();
+                opponentFound = true;
+                break;
+            }
+        }
+
+        if (!opponentFound) {
+            JOptionPane.showMessageDialog(null,
+                    "Error: Oponente no encontrado: " + oponent,
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        this.oponent = oponent;
+
         cargarPiezas();
 
         addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int clickX = e.getX() / celdas;
-                int clickY = e.getY() / celdas;
+        @Override
+        public void mousePressed(MouseEvent e) {
+            // Convertir coordenadas del click a posiciones del tablero
+            int clickX = e.getX() / celdas;
+            int clickY = e.getY() / celdas;
 
-                if (clickX < 0 || clickX >= columnas || clickY < 0 || clickY >= filas) {
-                    return;
-                }
+            // Verificar que el click esté dentro del tablero
+            if (clickX >= columnas || clickY >= filas || clickX < 0 || clickY < 0) {
+                return;
+            }
 
-                piezas piezaClickeada = tablero[clickX][clickY];
-                String colorTurno = turnoprimerjugador ? "rojo" : "negro";
-
-                if (piezaSeleccionada != null) {
+            // Si ya hay una pieza seleccionada
+            if (piezaSeleccionada != null) {
+                // Si el click es en una casilla válida para mover
+                if (piezaSeleccionada.movimientoValido(clickX, clickY, tablero)) {
+                    // Si hay una pieza amiga en el destino, cancelar el movimiento
                     if (hayPiezaAmiga(clickX, clickY)) {
                         piezaSeleccionada = null;
                         repaint();
                         return;
                     }
-
-                    if (piezaSeleccionada.movimientoValido(clickX, clickY, tablero)) {
-
-                        String jugador = turnoprimerjugador ? players.getpa().getUsuario() : oponent;
-                        
-
-                        
-
-                        
-
-                        tablero[piezaSeleccionada.getX()][piezaSeleccionada.getY()] = null;
-                        piezaact.setLocation(clickX, clickY);
-                        tablero[clickX][clickY] = piezaSeleccionada;
-                        piezaSeleccionada = null;
-
-                        repaint();
-                        cambiarTurno();
-                    } else {
-                        piezaSeleccionada = null;
-                        repaint();
+                    
+                    // Realizar el movimiento
+                    moverPieza(clickX, clickY);
+                    
+                    // Verificar si se capturó algún general
+                    if (capturaGeneral()) {
+                        return;
                     }
+                    
+                    // Cambiar el turno
+                    cambiarTurno();
                 } else {
-                    if (piezaClickeada != null && piezaClickeada.getColor().equals(colorTurno)) {
-                        piezaSeleccionada = piezaClickeada;
-                        repaint();
-                    }
+                    // Si el movimiento no es válido, deseleccionar la pieza
+                    piezaSeleccionada = null;
+                }
+                repaint();
+                return;
+            }
+
+            // Si no hay pieza seleccionada, intentar seleccionar una
+            piezas piezaClickeada = tablero[clickY][clickX];
+            if (piezaClickeada != null) {
+                // Verificar si la pieza pertenece al jugador del turno actual
+                String colorTurno = turnoprimerjugador ? "rojo" : "negro";
+                if (piezaClickeada.getColor().equals(colorTurno)) {
+                    piezaSeleccionada = piezaClickeada;
+                    repaint();
                 }
             }
-        });
+        }
+    });
     }
     private void cambiarTurno() {
-    turnoprimerjugador = !turnoprimerjugador;
-    
-}
+        turnoprimerjugador = !turnoprimerjugador;
+        turnoLabel.setText("Turno: " + (turnoprimerjugador ? jugadorActivo + " (Rojo)" : jugadorOponente + " (Negro)"));
+        turnoLabel.setForeground(turnoprimerjugador ? Color.RED : Color.BLACK);
+    }
 
+    // Implementing ActionListener for retire button
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == retirarseBtn) {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro que desea retirarse?",
+                    "Confirmar retiro",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                if (turnoprimerjugador) {
+                    for (int i = 0; i < players.getcantusuarios(); i++) {
+                        usuarios[] jugadores = players.getjugador();
+                        if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
+                            jugadores[i].agregarp();
+                            break;
+                        }
+                    }
+                } else {
+                    players.getpa().agregarp();
+                }
+
+                Container container = this.getParent();
+                if (container instanceof JFrame) {
+                    ((JFrame) container).dispose();
+                }
+                new MenuInicial().setVisible(true);
+            }
+        }
+    }
+
+    // The rest of your Tablero implementation remains the same
     private void cargarPiezas() {
+        // Your existing code for loading pieces
         //General
         tablero[0][4] = new General(4, 0, "negro", "src/imagenes/generaln.png");
         tablero[9][4] = new General(4, 9, "rojo", "src/imagenes/generalr.png");
@@ -137,55 +210,52 @@ public class Tablero extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(9 * celdas, 10 * celdas);
+        return new Dimension(columnas * celdas, filas * celdas + 40);
     }
 
     private void dibujarTablero(Graphics2D g) {
-    // Color de fondo del tablero
-    g.setColor(new Color(233, 149, 65));
-    g.fillRect(0, 0, getWidth(), getHeight());
+        // Your existing drawing code
+        // Color de fondo del tablero
+        g.setColor(new Color(233, 149, 65));
+        g.fillRect(0, 0, columnas * celdas, filas * celdas);
 
-    // Dibujar las casillas del tablero en patrón de ajedrez
-    for (int fila = 0; fila < filas; fila++) {
-        for (int col = 0; col < columnas; col++) {
-            if ((fila + col) % 2 == 0) {
-                g.setColor(new Color(240, 217, 181)); // Color claro
-            } else {
-                g.setColor(new Color(181, 136, 99)); // Color oscuro
+        // Dibujar las casillas del tablero en patrón de ajedrez
+        for (int fila = 0; fila < filas; fila++) {
+            for (int col = 0; col < columnas; col++) {
+                if ((fila + col) % 2 == 0) {
+                    g.setColor(new Color(240, 217, 181)); // Color claro
+                } else {
+                    g.setColor(new Color(181, 136, 99)); // Color oscuro
+                }
+                g.fillRect(col * celdas, fila * celdas, celdas, celdas);
             }
-            g.fillRect(col * celdas, fila * celdas, celdas, celdas);
         }
-    }
 
-    
-    // Líneas gruesas para los bordes del río
-    g.setColor(Color.BLACK);
-    g.setStroke(new BasicStroke(3));
-    g.drawLine(0, 5 * celdas, columnas * celdas, 5 * celdas); // Línea superior del río
+        // Líneas gruesas para los bordes del río
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(3));
+        g.drawLine(0, 5 * celdas, columnas * celdas, 5 * celdas); // Línea superior del río
 
-    // Restaurar grosor normal para la cuadrícula
-    g.setStroke(new BasicStroke(1));
+        // Restaurar grosor normal para la cuadrícula
+        g.setStroke(new BasicStroke(1));
 
-    // Dibujar la cuadrícula
-    g.setColor(Color.BLACK);
-    for (int col = 0; col <= columnas; col++) {
-        g.drawLine(col * celdas, 0, col * celdas, filas * celdas);
-    }
+        // Dibujar la cuadrícula
+        g.setColor(Color.BLACK);
+        for (int col = 0; col <= columnas; col++) {
+            g.drawLine(col * celdas, 0, col * celdas, filas * celdas);
+        }
 
-    for (int row = 0; row <= filas; row++) {
-        g.drawLine(0, row * celdas, columnas * celdas, row * celdas);
-    }
+        for (int row = 0; row <= filas; row++) {
+            g.drawLine(0, row * celdas, columnas * celdas, row * celdas);
+        }
 
-    // Dibujar los palacios
-     g.drawLine(3 * celdas, 0, 6 * celdas, 3 * celdas); 
-        g.drawLine(6 * celdas, 0, 3 * celdas, 3 * celdas); 
+        // Dibujar los palacios
+        g.drawLine(3 * celdas, 0, 6 * celdas, 3 * celdas);
+        g.drawLine(6 * celdas, 0, 3 * celdas, 3 * celdas);
 
-        g.drawLine(3 * celdas, 7 * celdas, 6 * celdas, 10 * celdas); 
+        g.drawLine(3 * celdas, 7 * celdas, 6 * celdas, 10 * celdas);
         g.drawLine(6 * celdas, 7 * celdas, 3 * celdas, 10 * celdas);
-    
-}
-
-
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -208,17 +278,100 @@ public class Tablero extends JPanel {
     }
 
     private void Piezas(Graphics g) {
-        for (int i = 0; i < columnas; i++) {
-            for (int j = 0; j < filas; j++) {
-                if (tablero[j][i] != null) {
-                    tablero[j][i].dibujar(g, 60);
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (tablero[i][j] != null) {
+                    tablero[i][j].dibujar(g, celdas);
                 }
             }
         }
     }
 
-    private boolean hayPiezaAmiga(int x, int y) {
-        return tablero[x][y] != null && piezaSeleccionada.getColor().equals(tablero[x][y].getColor());
+   private boolean hayPiezaAmiga(int x, int y) {
+        piezas piezaDestino = tablero[y][x];
+        return piezaDestino != null && 
+               piezaSeleccionada != null && 
+               piezaDestino.getColor().equals(piezaSeleccionada.getColor());
+    }
+
+
+    
+
+    private void declararGanador(boolean esPrimerJugador) {
+        String ganador = esPrimerJugador ? players.getpa().getUsuario() : oponent;
+
+        JOptionPane.showMessageDialog(this,
+                "¡" + ganador + " ha ganado la partida!",
+                "Fin del juego",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        // Actualizar puntos
+        if (esPrimerJugador) {
+            // Jugador activo gana
+            players.getpa().agregarp();
+        } else {
+            // Oponente gana
+            for (int i = 0; i < players.getcantusuarios(); i++) {
+                usuarios[] jugadores = players.getjugador();
+                if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
+                    jugadores[i].agregarp();
+                    break;
+                }
+            }
+        }
+
+        // Regresar al menú principal
+        Container container = this.getParent();
+        if (container instanceof JFrame) {
+            ((JFrame) container).dispose();
+        }
+        new MenuInicial().setVisible(true);
+    }
+    private boolean capturaGeneral() {
+    boolean generalRojo = false;
+    boolean generalNegro = false;
+
+    for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            if (tablero[i][j] instanceof General) {
+                if (tablero[i][j].getColor().equals("rojo")) {
+                    generalRojo = true;
+                } else if (tablero[i][j].getColor().equals("negro")) {
+                    generalNegro = true;
+                }
+            }
+        }
+    }
+
+    // Si falta un general, se declara ganador
+    if (!generalRojo) {
+        declararGanador(false); // Negro gana
+        return true;
+    } else if (!generalNegro) {
+        declararGanador(true); // Rojo gana
+        return true;
+    }
+
+    return false;
+}
+   private void moverPieza(int x, int y) {
+        if (piezaSeleccionada == null) return;
+
+        // Guardar coordenadas originales
+        int origenX = piezaSeleccionada.getX();
+        int origenY = piezaSeleccionada.getY();
+
+        // Actualizar la posición de la pieza
+        piezaSeleccionada.setX(x);
+        piezaSeleccionada.setY(y);
+
+        // Actualizar el tablero
+        tablero[y][x] = piezaSeleccionada;
+        tablero[origenY][origenX] = null;
+
+        // Deseleccionar la pieza
+        piezaSeleccionada = null;
+        repaint();
     }
 
 }

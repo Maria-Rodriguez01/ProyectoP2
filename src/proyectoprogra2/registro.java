@@ -90,6 +90,11 @@ public class registro extends JFrame {
                 mostrarError("Por favor, complete ambos campos.");
                 return false;
             }
+            
+             if (password.length() != 5) {
+            JOptionPane.showMessageDialog(null, "La contraseña debe tener exactamente 5 caracteres");
+            return false;
+        }
 
             // Verificar usuario existente
             usuarios[] jugadores = sistema.getjugador();
@@ -104,13 +109,14 @@ public class registro extends JFrame {
             // Crear y registrar nuevo usuario
             usuarios nuevoJugador = new usuarios(usu, password);
             sistema.addusuario(nuevoJugador);
-
+            sistema.setpa(nuevoJugador);
+            
             JOptionPane.showMessageDialog(this, 
                 "Registro exitoso", 
                 "Éxito", 
                 JOptionPane.INFORMATION_MESSAGE);
 
-            MenuPrincipal regreso = new MenuPrincipal();
+            MenuInicial regreso = new MenuInicial();
             regreso.setVisible(true);
             dispose();
             return true;
@@ -120,14 +126,13 @@ public class registro extends JFrame {
             return false;
         }
     }
-
-
-    private void mostrarError(String mensaje) {
+   private void mostrarError(String mensaje) {
     JOptionPane.showMessageDialog(
         this,
         mensaje,
         "Error de Registro",
         JOptionPane.ERROR_MESSAGE
     );
+
 }
 }

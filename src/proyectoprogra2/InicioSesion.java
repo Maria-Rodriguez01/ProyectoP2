@@ -1,4 +1,5 @@
 package proyectoprogra2;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -8,7 +9,6 @@ public class InicioSesion extends JFrame {
     private final JButton btnIngresar;
     private final JButton btnSalir;
     private final usuarios sistema = usuarios.obtenerInstancia();
-    private final usuarios[] jugadores = sistema.getjugador();
     
     public InicioSesion() {
         setTitle("Login de Jugadores");
@@ -70,57 +70,51 @@ public class InicioSesion extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
     }
     
-    private boolean validarLogin() {
+    private void validarLogin() {
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtContrasena.getPassword()).trim();
         
         // Validate input fields
         if (usuario.isEmpty() || password.isEmpty()) {
             mostrarError("Por favor, complete ambos campos.");
-            return false;
+            return;
         }
-        
-                int contadorJugadores = sistema.getcantusuarios();
-                boolean loginExitoso = false;
 
-                for (int i = 0; i < contadorJugadores; i++) {
-                    if (jugadores[i].getUsuario().equalsIgnoreCase(usuario) && 
-                        jugadores[i].getContrasena().equals(password)) {
-                        sistema.setpa(jugadores[i]);
-                        loginExitoso = true;
-                        JOptionPane.showMessageDialog(this, "Inicio de sesion exitoso");
-                        new MenuInicial();
-                        this.dispose();
-                        break;
-                    }
-                }
+        usuarios[] jugadores = sistema.getjugador(); // Obtener lista de jugadores
+        if (jugadores == null) {
+            mostrarError("No hay jugadores registrados.");
+            return;
+        }
 
-                if (!loginExitoso) {
-                    JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
-                }
-        
-        mostrarError("Usuario o contraseña incorrectos.");
-        return false;
-    }
-    
-    private usuarios buscarUsuario(String usuario, String password) {
-        for (int i = 0; i < sistema.getcantusuarios(); i++) {
-            if (jugadores[i] != null && 
-                jugadores[i].getUsuario().equalsIgnoreCase(usuario) && 
+        int contadorJugadores = sistema.getcantusuarios();
+        boolean loginlogrado = false;
+
+        for (int i = 0; i < contadorJugadores; i++) {
+            if (jugadores[i].getUsuario().equalsIgnoreCase(usuario) && 
                 jugadores[i].getContrasena().equals(password)) {
-                return jugadores[i];
+                
+                sistema.setpa(jugadores[i]); // Establecer el usuario como activo
+                loginlogrado = true;
+
+                JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
+
+                // Mostrar el menú principal
+                MenuInicial menu = new MenuInicial();
+                menu.setVisible(true);
+
+                this.dispose(); // Cierra la ventana actual
+                return;
             }
         }
-        return null;
+
+        mostrarError("Usuario o contraseña incorrectos.");
     }
-    
-    
-    
+
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(
             this,
             mensaje,
-            "Error de Registro",
+            "Error de Inicio de Sesión",
             JOptionPane.ERROR_MESSAGE
         );
     }
