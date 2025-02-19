@@ -1,76 +1,224 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyectoprogra2;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+public class Tablero extends JPanel {
+    private boolean turnoprimerjugador = true;
+    private final int celdas = 60;
+    private static final int filas = 10;
+    private static final int columnas = 9;
+    private piezas[][] tablero = new piezas[filas][columnas];
+    private piezas piezaSeleccionada = null;
+    private static final players players = new usuarios(null, null);
+    private int moveNumber = 1;
+    private String oponent;
+    protected piezas piezaact=null;
+    private JButton retirarseBtn;
 
-public class Tablero extends JFrame {
-    private static final int ROWS = 11; // Número de filas
-    private static final int COLS = 9; // Número de columnas
-    private final JPanel[][] tablero = new JPanel[ROWS][COLS]; // Matriz para almacenar los paneles
+    public Tablero(String oponent) {
+        JFrame pantalla=new JFrame();
+        pantalla.setTitle("Xiangqi - Ajedrez Chino");
+        pantalla.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pantalla.add(this);
+        this.setPreferredSize(new Dimension(columnas * celdas, filas * celdas));
+        
+        retirarseBtn = new JButton("Retirarse");
+        retirarseBtn.setBounds(400, 660, 100, 30);
+        retirarseBtn.addActionListener((ActionListener) this);
+        pantalla.add(retirarseBtn);
+        
+        
+        
+        players.getpa().nuevapartida();
+        usuarios[] jugadores= players.getjugador();
+        for (int i = 0; i < 10; i++) {  
+        if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
+            jugadores[i].nuevapartida();//agregar una nueva partida
+            break;
+        }
+      }
+        this.oponent= oponent;//determinar el oponente
+        
+        cargarPiezas();
 
-    public Tablero() {
-        JFrame frame = new JFrame("Xiangqui");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 500);
-        frame.setLayout(new BorderLayout());
-        frame.setLocationRelativeTo(null);
-        
-        
-         // Paneles para dejar espacio en la parte superior e inferior
-        JPanel espacio1 = new JPanel();
-        JPanel espacio2 = new JPanel();
-        espacio1.setPreferredSize(new Dimension(600, 50));
-        espacio2.setPreferredSize(new Dimension(600, 50));
-        
-        
-        Color color1 = new Color(238, 238, 210); // Crema claro
-        Color color2 = new Color(118, 150, 86);  // Verde oscuro
-        Color colorRio = new Color(173, 216, 230); // Azul claro para el río 
-        
-        JPanel boardPanel = new JPanel(new GridLayout(ROWS, COLS));
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                JPanel cell = new JPanel();
-                cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                
-                // Definir bordes más gruesos para la parte central 3x3 en los extremos superior e inferior
-                if ((row < 3 || row >= ROWS - 3) && (col >= (COLS / 2) - 1 && col <= (COLS / 2) + 1)) {
-                    cell.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-                } else {
-                    cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int clickX = e.getX() / celdas;
+                int clickY = e.getY() / celdas;
+
+                if (clickX < 0 || clickX >= columnas || clickY < 0 || clickY >= filas) {
+                    return;
                 }
-                
-                // Alternar colores como tablero de ajedrez
-                if (row == ROWS / 2) {
-                    cell.setBackground(colorRio); // Línea central azul4
-                    
-                } else {
-                    if ((row + col) % 2 == 0) {
-                        cell.setBackground(color1);
+
+                piezas piezaClickeada = tablero[clickX][clickY];
+                String colorTurno = turnoprimerjugador ? "rojo" : "negro";
+
+                if (piezaSeleccionada != null) {
+                    if (hayPiezaAmiga(clickX, clickY)) {
+                        piezaSeleccionada = null;
+                        repaint();
+                        return;
+                    }
+
+                    if (piezaSeleccionada.movimientoValido(clickX, clickY, tablero)) {
+
+                        String jugador = turnoprimerjugador ? players.getpa().getUsuario() : oponent;
+                        
+
+                        
+
+                        
+
+                        tablero[piezaSeleccionada.getX()][piezaSeleccionada.getY()] = null;
+                        piezaact.setLocation(clickX, clickY);
+                        tablero[clickX][clickY] = piezaSeleccionada;
+                        piezaSeleccionada = null;
+
+                        repaint();
+                        cambiarTurno();
                     } else {
-                        cell.setBackground(color2);
+                        piezaSeleccionada = null;
+                        repaint();
+                    }
+                } else {
+                    if (piezaClickeada != null && piezaClickeada.getColor().equals(colorTurno)) {
+                        piezaSeleccionada = piezaClickeada;
+                        repaint();
                     }
                 }
-                
-                tablero[row][col] = cell; // Guardar en el arreglo
-                boardPanel.add(cell);
+            }
+        });
+    }
+    private void cambiarTurno() {
+    turnoprimerjugador = !turnoprimerjugador;
+    
+}
+
+    private void cargarPiezas() {
+        //General
+        tablero[0][4] = new General(4, 0, "negro", "src/imagenes/generaln.png");
+        tablero[9][4] = new General(4, 9, "rojo", "src/imagenes/generalr.png");
+        //Advisor
+        tablero[0][3] = new Advisor(3, 0, "negro", "src/imagenes/advisorn.png");
+        tablero[0][5] = new Advisor(5, 0, "negro", "src/imagenes/advisorn.png");
+        tablero[9][3] = new Advisor(3, 9, "rojo", "src/imagenes/advisorr.png");
+        tablero[9][5] = new Advisor(5, 9, "rojo", "src/imagenes/advisorr.png");
+        //Elephant
+        tablero[0][2] = new Elephant(2, 0, "negro", "src/imagenes/elephantn.png");
+        tablero[0][6] = new Elephant(6, 0, "negro", "src/imagenes/elephantn.png");
+        tablero[9][2] = new Elephant(2, 9, "rojo", "src/imagenes/elephantr.png");
+        tablero[9][6] = new Elephant(6, 9, "rojo", "src/imagenes/elephantr.png");
+        //Horse
+        tablero[0][1] = new Horse(1, 0, "negro", "src/imagenes/horsen.png");
+        tablero[0][7] = new Horse(7, 0, "negro", "src/imagenes/horsen.png");
+        tablero[9][1] = new Horse(1, 9, "rojo", "src/imagenes/horser.png");
+        tablero[9][7] = new Horse(7, 9, "rojo", "src/imagenes/horser.png");
+        //Chariot
+        tablero[0][0] = new Chariot(0, 0, "negro", "src/imagenes/chariotn.png");
+        tablero[0][8] = new Chariot(8, 0, "negro", "src/imagenes/chariotn.png");
+        tablero[9][0] = new Chariot(0, 9, "rojo", "src/imagenes/chariotr.png");
+        tablero[9][8] = new Chariot(8, 9, "rojo", "src/imagenes/chariotr.png");
+        //Cannon
+        tablero[2][1] = new Cannon(1, 2, "negro", "src/imagenes/canonn.png");
+        tablero[2][7] = new Cannon(7, 2, "negro", "src/imagenes/canonn.png");
+        tablero[7][1] = new Cannon(1, 7, "rojo", "src/imagenes/canonr.png");
+        tablero[7][7] = new Cannon(7, 7, "rojo", "src/imagenes/canonr.png");
+        //Soldiers
+        for (int i = 0; i < 9; i += 2) {
+            tablero[3][i] = new Soldier(i, 3, "negro", "src/imagenes/soldiern.png");
+            tablero[6][i] = new Soldier(i, 6, "rojo", "src/imagenes/soldierr.png");
+        }
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(9 * celdas, 10 * celdas);
+    }
+
+    private void dibujarTablero(Graphics2D g) {
+    // Color de fondo del tablero
+    g.setColor(new Color(233, 149, 65));
+    g.fillRect(0, 0, getWidth(), getHeight());
+
+    // Dibujar las casillas del tablero en patrón de ajedrez
+    for (int fila = 0; fila < filas; fila++) {
+        for (int col = 0; col < columnas; col++) {
+            if ((fila + col) % 2 == 0) {
+                g.setColor(new Color(240, 217, 181)); // Color claro
+            } else {
+                g.setColor(new Color(181, 136, 99)); // Color oscuro
+            }
+            g.fillRect(col * celdas, fila * celdas, celdas, celdas);
+        }
+    }
+
+    
+    // Líneas gruesas para los bordes del río
+    g.setColor(Color.BLACK);
+    g.setStroke(new BasicStroke(3));
+    g.drawLine(0, 5 * celdas, columnas * celdas, 5 * celdas); // Línea superior del río
+
+    // Restaurar grosor normal para la cuadrícula
+    g.setStroke(new BasicStroke(1));
+
+    // Dibujar la cuadrícula
+    g.setColor(Color.BLACK);
+    for (int col = 0; col <= columnas; col++) {
+        g.drawLine(col * celdas, 0, col * celdas, filas * celdas);
+    }
+
+    for (int row = 0; row <= filas; row++) {
+        g.drawLine(0, row * celdas, columnas * celdas, row * celdas);
+    }
+
+    // Dibujar los palacios
+     g.drawLine(3 * celdas, 0, 6 * celdas, 3 * celdas); 
+        g.drawLine(6 * celdas, 0, 3 * celdas, 3 * celdas); 
+
+        g.drawLine(3 * celdas, 7 * celdas, 6 * celdas, 10 * celdas); 
+        g.drawLine(6 * celdas, 7 * celdas, 3 * celdas, 10 * celdas);
+    
+}
+
+
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        dibujarTablero((Graphics2D) g);
+        if (piezaSeleccionada != null) {
+            Color mostrar = new Color(0, 250, 20, 100);
+            g.setColor(mostrar);
+
+            for (int x = 0; x < columnas; x++) {
+                for (int y = 0; y < filas; y++) {
+                    if (piezaSeleccionada.movimientoValido(x, y, tablero) && !hayPiezaAmiga(x, y)) {
+                        g.fillRect(x * celdas, y * celdas, celdas, celdas);
+                    }
+                }
             }
         }
-        
-        // Botón de resignación
-        JButton resignar = new JButton("Resignarse");
-        resignar.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Te has rendido."));
-        
-        
-        frame.add(boardPanel, BorderLayout.CENTER);
-        frame.add(espacio2,BorderLayout.SOUTH);
-        espacio2.add(resignar, BorderLayout.SOUTH);
-        frame.add(espacio1,BorderLayout.NORTH);
-        frame.setVisible(true);
-}
+
+        Piezas(g);
+    }
+
+    private void Piezas(Graphics g) {
+        for (int i = 0; i < columnas; i++) {
+            for (int j = 0; j < filas; j++) {
+                if (tablero[j][i] != null) {
+                    tablero[j][i].dibujar(g, 60);
+                }
+            }
+        }
+    }
+
+    private boolean hayPiezaAmiga(int x, int y) {
+        return tablero[x][y] != null && piezaSeleccionada.getColor().equals(tablero[x][y].getColor());
+    }
+
 }

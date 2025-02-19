@@ -4,10 +4,14 @@
  */
 package proyectoprogra2;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author Maria Gabriela
  */
-public class reportes {
-    
+public class reportes extends JFrame{
+    public reportes(){
+        this.setVisible(true);
+    }
 }

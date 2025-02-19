@@ -5,13 +5,12 @@
 package proyectoprogra2;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
 
-/**
- *
- * @author Maria Gabriela
- */
+
 public class MenuInicial extends JFrame{
+     private final usuarios sistema = usuarios.obtenerInstancia();
     public MenuInicial() {
         setTitle("Menú Principal");
         setSize(400, 200);
@@ -69,7 +68,30 @@ public class MenuInicial extends JFrame{
         panelBotones.add(btnLogout);
 
         add(panelBotones, BorderLayout.CENTER);
+        
+        btnJugar.addActionListener((ActionEvent e) -> {
+           new tablerovisible() ;
+           this.dispose();
+        });
+        btnLogout.addActionListener((ActionEvent e) -> {
+            HacerLogout();
+            new MenuPrincipal();
+            this.dispose();
+            
+        });
+        btnCuenta.addActionListener((ActionEvent e) -> {
+           new micuenta() ;
+           this.dispose();
+        });
+        btnReportes.addActionListener((ActionEvent e) -> {
+           reportes rep=new reportes() ;
+           rep.setVisible(true);
+           this.dispose();
+        });
 
         setVisible(true);
+    }
+    public void HacerLogout(){
+        sistema.setpa(null);
     }
 }
