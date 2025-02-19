@@ -19,12 +19,10 @@ public class registro extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Panel for input fields with improved layout
         JPanel panelCampos = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         panelCampos.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Username field setup
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -36,7 +34,6 @@ public class registro extends JFrame {
         txtUsuario = new JTextField(20);
         panelCampos.add(txtUsuario, gbc);
 
-        // Password field setup
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.NONE;
@@ -57,7 +54,6 @@ public class registro extends JFrame {
         panelBotones.add(btnRegistrar);
         panelBotones.add(btnSalir);
 
-        // Register button action
         btnRegistrar.addActionListener(e -> {
             String usuario = txtUsuario.getText().trim();
             String contrasena = new String(txtContrasena.getPassword()).trim();
@@ -96,7 +92,6 @@ public class registro extends JFrame {
             return false;
         }
 
-            // Verificar usuario existente
             usuarios[] jugadores = sistema.getjugador();
             for (int i = 0; i < sistema.getcantusuarios(); i++) {
                 if (jugadores[i] != null && 
@@ -106,7 +101,6 @@ public class registro extends JFrame {
                 }
             }
 
-            // Crear y registrar nuevo usuario
             usuarios nuevoJugador = new usuarios(usu, password);
             sistema.addusuario(nuevoJugador);
             sistema.setpa(nuevoJugador);

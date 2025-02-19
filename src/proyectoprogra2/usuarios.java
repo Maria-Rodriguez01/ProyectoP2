@@ -71,7 +71,6 @@ public class usuarios implements players {
     public void eliminarusuario(usuarios player) {
         for (int i = 0; i < cantusuarios; i++) {
             if (jugador[i] == player) {
-                // Desplazar elementos
                 for (int j = i; j < cantusuarios - 1; j++) {
                     jugador[j] = jugador[j + 1];
                 }
@@ -85,13 +84,15 @@ public class usuarios implements players {
         }
     }
 
-    // Métodos para usuario individual
     public String getUsuario() {
         return usuario;
     }
 
     public String getContrasena() {
         return contrasena;
+    }
+        public void setContrasena(String nuevacontrasena) {
+        this.contrasena=nuevacontrasena;
     }
 
     public int getPuntaje() {

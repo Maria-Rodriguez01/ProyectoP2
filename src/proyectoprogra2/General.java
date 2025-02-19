@@ -1,6 +1,5 @@
 package proyectoprogra2;
 
-import proyectoprogra2.piezas;
 
 public class General extends piezas {
     public General(int x, int y, String color, String rutaImagen) {

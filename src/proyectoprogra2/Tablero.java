@@ -28,8 +28,6 @@ public class Tablero extends JPanel implements ActionListener {
     public Tablero(String oponent) {
         this.setPreferredSize(new Dimension(columnas * celdas, filas * celdas + 40));
         this.setLayout(null);
-
-        // Guarda los nombres de los jugadores
         this.jugadorActivo = players.getpa().getUsuario();
         this.jugadorOponente = oponent;
         this.oponent = oponent;
@@ -82,48 +80,37 @@ public class Tablero extends JPanel implements ActionListener {
         addMouseListener(new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
-            // Convertir coordenadas del click a posiciones del tablero
             int clickX = e.getX() / celdas;
             int clickY = e.getY() / celdas;
 
-            // Verificar que el click esté dentro del tablero
             if (clickX >= columnas || clickY >= filas || clickX < 0 || clickY < 0) {
                 return;
             }
 
-            // Si ya hay una pieza seleccionada
             if (piezaSeleccionada != null) {
-                // Si el click es en una casilla válida para mover
                 if (piezaSeleccionada.movimientoValido(clickX, clickY, tablero)) {
-                    // Si hay una pieza amiga en el destino, cancelar el movimiento
                     if (hayPiezaAmiga(clickX, clickY)) {
                         piezaSeleccionada = null;
                         repaint();
                         return;
                     }
                     
-                    // Realizar el movimiento
                     moverPieza(clickX, clickY);
                     
-                    // Verificar si se capturó algún general
                     if (capturaGeneral()) {
                         return;
                     }
                     
-                    // Cambiar el turno
                     cambiarTurno();
                 } else {
-                    // Si el movimiento no es válido, deseleccionar la pieza
                     piezaSeleccionada = null;
                 }
                 repaint();
                 return;
             }
 
-            // Si no hay pieza seleccionada, intentar seleccionar una
             piezas piezaClickeada = tablero[clickY][clickX];
             if (piezaClickeada != null) {
-                // Verificar si la pieza pertenece al jugador del turno actual
                 String colorTurno = turnoprimerjugador ? "rojo" : "negro";
                 if (piezaClickeada.getColor().equals(colorTurno)) {
                     piezaSeleccionada = piezaClickeada;
@@ -139,7 +126,6 @@ public class Tablero extends JPanel implements ActionListener {
         turnoLabel.setForeground(turnoprimerjugador ? Color.RED : Color.BLACK);
     }
 
-    // Implementing ActionListener for retire button
     @Override
     public void actionPerformed(ActionEvent e) {
     if (e.getSource() == retirarseBtn) {
@@ -152,13 +138,10 @@ public class Tablero extends JPanel implements ActionListener {
             String ganador;
             String perdedor;
             
-            // Determinar quién gana basado en quién se retira
             if (turnoprimerjugador) {
-                // Si se retira el primer jugador (rojo), gana el oponente (negro)
                 ganador = oponent;
                 perdedor = players.getpa().getUsuario();
                 
-                // Actualizar puntos del oponente
                 usuarios[] jugadores = players.getjugador();
                 for (int i = 0; i < players.getcantusuarios(); i++) {
                     if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
@@ -167,19 +150,15 @@ public class Tablero extends JPanel implements ActionListener {
                     }
                 }
             } else {
-                // Si se retira el segundo jugador (negro), gana el primer jugador (rojo)
                 ganador = players.getpa().getUsuario();
                 perdedor = oponent;
                 players.getpa().agregarp();
             }
 
-            // Mostrar mensaje de victoria por retiro
             JOptionPane.showMessageDialog(this,
                     perdedor + " se ha retirado.\n¡" + ganador + " ha ganado la partida!",
                     "Fin del juego",
                     JOptionPane.INFORMATION_MESSAGE);
-
-            // Cerrar la ventana y volver al menú principal
             Container container = this.getParent();
             if (container instanceof JFrame) {
                 ((JFrame) container).dispose();
@@ -189,9 +168,8 @@ public class Tablero extends JPanel implements ActionListener {
     }
 }
 
-    // The rest of your Tablero implementation remains the same
     private void cargarPiezas() {
-        // Your existing code for loading pieces
+        
         //General
         tablero[0][4] = new General(4, 0, "negro", "src/imagenes/generaln.png");
         tablero[9][4] = new General(4, 9, "rojo", "src/imagenes/generalr.png");
@@ -233,8 +211,6 @@ public class Tablero extends JPanel implements ActionListener {
     }
 
     private void dibujarTablero(Graphics2D g) {
-        // Your existing drawing code
-        // Color de fondo del tablero
         g.setColor(new Color(233, 149, 65));
         g.fillRect(0, 0, columnas * celdas, filas * celdas);
 
@@ -250,15 +226,12 @@ public class Tablero extends JPanel implements ActionListener {
             }
         }
 
-        // Líneas gruesas para los bordes del río
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(3));
         g.drawLine(0, 5 * celdas, columnas * celdas, 5 * celdas); // Línea superior del río
 
-        // Restaurar grosor normal para la cuadrícula
         g.setStroke(new BasicStroke(1));
 
-        // Dibujar la cuadrícula
         g.setColor(Color.BLACK);
         for (int col = 0; col <= columnas; col++) {
             g.drawLine(col * celdas, 0, col * celdas, filas * celdas);
@@ -268,7 +241,6 @@ public class Tablero extends JPanel implements ActionListener {
             g.drawLine(0, row * celdas, columnas * celdas, row * celdas);
         }
 
-        // Dibujar los palacios
         g.drawLine(3 * celdas, 0, 6 * celdas, 3 * celdas);
         g.drawLine(6 * celdas, 0, 3 * celdas, 3 * celdas);
 
@@ -324,12 +296,9 @@ public class Tablero extends JPanel implements ActionListener {
                 "Fin del juego",
                 JOptionPane.INFORMATION_MESSAGE);
 
-        // Actualizar puntos
         if (esPrimerJugador) {
-            // Jugador activo gana
             players.getpa().agregarp();
         } else {
-            // Oponente gana
             for (int i = 0; i < players.getcantusuarios(); i++) {
                 usuarios[] jugadores = players.getjugador();
                 if (jugadores[i] != null && jugadores[i].getUsuario().equals(oponent)) {
@@ -339,11 +308,7 @@ public class Tablero extends JPanel implements ActionListener {
             }
         }
 
-        // Regresar al menú principal
-        Container container = this.getParent();
-        if (container instanceof JFrame) {
-            ((JFrame) container).dispose();
-        }
+        SwingUtilities.getWindowAncestor(this).dispose();
         new MenuInicial().setVisible(true);
     }
     private boolean capturaGeneral() {
@@ -362,12 +327,11 @@ public class Tablero extends JPanel implements ActionListener {
         }
     }
 
-    // Si falta un general, se declara ganador
     if (!generalRojo) {
-        declararGanador(false); // Negro gana
+        declararGanador(false); 
         return true;
     } else if (!generalNegro) {
-        declararGanador(true); // Rojo gana
+        declararGanador(true); 
         return true;
     }
 
@@ -376,19 +340,15 @@ public class Tablero extends JPanel implements ActionListener {
    private void moverPieza(int x, int y) {
         if (piezaSeleccionada == null) return;
 
-        // Guardar coordenadas originales
         int origenX = piezaSeleccionada.getX();
         int origenY = piezaSeleccionada.getY();
 
-        // Actualizar la posición de la pieza
         piezaSeleccionada.setX(x);
         piezaSeleccionada.setY(y);
 
-        // Actualizar el tablero
         tablero[y][x] = piezaSeleccionada;
         tablero[origenY][origenX] = null;
 
-        // Deseleccionar la pieza
         piezaSeleccionada = null;
         repaint();
     }

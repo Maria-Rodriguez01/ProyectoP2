@@ -17,12 +17,10 @@ public class InicioSesion extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Panel setup with GridBagLayout
         JPanel panelCampos = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         panelCampos.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Username field setup
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -34,7 +32,6 @@ public class InicioSesion extends JFrame {
         txtUsuario = new JTextField(20);
         panelCampos.add(txtUsuario, gbc);
         
-        // Password field setup
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.NONE;
@@ -45,7 +42,6 @@ public class InicioSesion extends JFrame {
         txtContrasena = new JPasswordField(20);
         panelCampos.add(txtContrasena, gbc);
         
-        // Buttons panel
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         btnIngresar = new JButton("Ingresar");
         btnSalir = new JButton("Salir");
@@ -56,7 +52,6 @@ public class InicioSesion extends JFrame {
         panelBotones.add(btnIngresar);
         panelBotones.add(btnSalir);
         
-        // Action listeners
         btnIngresar.addActionListener(e -> validarLogin());
         btnSalir.addActionListener(e -> {
             MenuPrincipal regreso = new MenuPrincipal();
@@ -64,7 +59,6 @@ public class InicioSesion extends JFrame {
             dispose();
         });
         
-        // Main layout setup
         setLayout(new BorderLayout());
         add(panelCampos, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
@@ -74,13 +68,12 @@ public class InicioSesion extends JFrame {
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtContrasena.getPassword()).trim();
         
-        // Validate input fields
         if (usuario.isEmpty() || password.isEmpty()) {
             mostrarError("Por favor, complete ambos campos.");
             return;
         }
 
-        usuarios[] jugadores = sistema.getjugador(); // Obtener lista de jugadores
+        usuarios[] jugadores = sistema.getjugador(); 
         if (jugadores == null) {
             mostrarError("No hay jugadores registrados.");
             return;
@@ -93,16 +86,15 @@ public class InicioSesion extends JFrame {
             if (jugadores[i].getUsuario().equalsIgnoreCase(usuario) && 
                 jugadores[i].getContrasena().equals(password)) {
                 
-                sistema.setpa(jugadores[i]); // Establecer el usuario como activo
+                sistema.setpa(jugadores[i]); 
                 loginlogrado = true;
 
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
 
-                // Mostrar el menú principal
                 MenuInicial menu = new MenuInicial();
                 menu.setVisible(true);
 
-                this.dispose(); // Cierra la ventana actual
+                this.dispose();
                 return;
             }
         }

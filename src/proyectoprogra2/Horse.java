@@ -1,6 +1,5 @@
 package proyectoprogra2;
 
-import proyectoprogra2.piezas;
 
 public class Horse extends piezas {
     public Horse(int x, int y, String color, String rutaImagen) {

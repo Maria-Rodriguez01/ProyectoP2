@@ -4,7 +4,6 @@
  */
 package proyectoprogra2;
 
-import proyectoprogra2.piezas;
 
 
 

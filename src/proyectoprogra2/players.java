@@ -15,4 +15,7 @@ public interface players {
     void setpa(usuarios player);
     void addusuario(usuarios player);
     void eliminarusuario(usuarios player);
+    public void cambiocontrasena(String nueva);
+    public String getContrasena();
+    
 }

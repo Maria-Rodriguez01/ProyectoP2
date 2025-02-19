@@ -22,7 +22,6 @@ public class MenuInicial extends JFrame{
         Font font = new Font("Arial", Font.BOLD, 18);
         Color color= new Color(201, 24, 42);
 
-        // 🔹 Etiqueta de título
         JLabel titulo = new JLabel("Menú Principal", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 24));
         add(titulo, BorderLayout.NORTH);
@@ -31,7 +30,6 @@ public class MenuInicial extends JFrame{
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(color);
 
-        // 🔹 Crear botones
         JButton btnJugar = new JButton("Jugar Xiangqi");
         JButton btnCuenta = new JButton("Mi Cuenta");
         JButton btnReportes = new JButton("Reportes");
@@ -46,7 +44,6 @@ public class MenuInicial extends JFrame{
         btnReportes.setForeground(color);
         btnLogout.setForeground(color);
 
-        // 🔹 Centrar botones dentro del panel
         btnJugar.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnCuenta.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnReportes.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -57,7 +54,6 @@ public class MenuInicial extends JFrame{
         btnReportes.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnLogout.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        // 🔹 Agregar espaciado entre botones
 
         panelBotones.add(btnJugar);
   
